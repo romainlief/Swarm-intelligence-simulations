@@ -1,0 +1,18 @@
+import numpy as np
+
+SIZE = (800, 600)
+WIDTH, HEIGHT = SIZE
+FPS = 60
+TITLE = "Boids - Pygame Simulation"
+
+NUM_BOIDS = 100
+
+TURNING_SPEED = np.radians(4)
+NOISE_ANGLE = np.radians(10)
+MOVING_SPEED = 3
+CHARACTERISTIC_LENGTH = 5
+
+REPULSION_RADIUS = 1.0
+ORIENTATION_RADIUS = 6.0
+ATTRACTION_RADIUS = 7.0
+VIEW_ANGLE = np.radians(360 - 90)
