@@ -1,0 +1,32 @@
+import numpy as np
+
+SIZE = (800, 600)
+WIDTH, HEIGHT = SIZE
+FPS = 60
+TITLE = "Sheep and Wolf - Pygame Simulation"
+
+# Sheep parameters 
+NUM_SHEEPS = 100
+
+S_TURNING_SPEED = np.radians(8)
+S_NOISE_ANGLE = np.radians(10)
+S_MOVING_SPEED = 2
+S_CHARACTERISTIC_LENGTH = 5
+
+S_REPULSION_RADIUS = 1.0
+S_ORIENTATION_RADIUS = 1.0
+S_ATTRACTION_RADIUS = 15.0
+S_VIEW_ANGLE = np.radians(270)
+
+# Wolf parameters
+NUM_WOLVES = 1
+
+W_TURNING_SPEED = np.radians(10)
+W_NOISE_ANGLE = np.radians(10)
+W_MOVING_SPEED = 2
+W_CHARACTERISTIC_LENGTH = 5
+
+W_REPULSION_RADIUS = 1.0
+W_ORIENTATION_RADIUS = 1.0
+W_ATTRACTION_RADIUS = 15.0
+W_VIEW_ANGLE = np.radians(270)

@@ -1,18 +1,10 @@
-from .boid import Boid
 from .const import *
 from src.common.utils import Utils
 import torch
-
+from .boid import Boid
 class Simulation:
-    def __init__(self, num_boids: int):
-        self.boids = Utils.createRandomBoids(num_boids)
-
-    @staticmethod
-    def normalize(vector: torch.Tensor) -> torch.Tensor:
-        norm = torch.norm(vector)
-        if norm > 1e-8:
-            return vector / norm
-        return torch.zeros_like(vector)
+    def __init__(self, num_boids: int = NUM_BOIDS):
+        self.boids = Utils.createRandomSpecies(num_boids, Boid)
 
     def update(self):
         new_velocities = []
@@ -31,14 +23,14 @@ class Simulation:
                     if dist > 1e-8:
                         # Plus ils sont proches, plus la force de répulsion est forte (1/dist)
                         repulsion_force += (diff / dist) / dist
-                repulsion_force = self.normalize(repulsion_force)
+                repulsion_force = Utils.normalize(repulsion_force)
 
             # FORCE D'ALIGNEMENT (ORIENTATION)
             alignment_force = torch.zeros(2)
             if len(orienting_boids) > 0:
                 for other in orienting_boids:
                     alignment_force += other.velocity
-                alignment_force = self.normalize(alignment_force)
+                alignment_force = Utils.normalize(alignment_force)
 
             # FORCE D'ATTRACTION (COHÉSION)
             cohesion_force = torch.zeros(2)
@@ -48,7 +40,7 @@ class Simulation:
                     center_of_mass += other.position
                 center_of_mass /= len(attracting_boids)
                 cohesion_force = center_of_mass - boid.position
-                cohesion_force = self.normalize(cohesion_force)
+                cohesion_force = Utils.normalize(cohesion_force)
 
             steering = boid.velocity.clone()
             
@@ -57,7 +49,7 @@ class Simulation:
             else:
                 steering = steering * 0.5 + alignment_force * 0.3 + cohesion_force * 0.2
             
-            new_velocities.append(self.normalize(steering))
+            new_velocities.append(Utils.normalize(steering))
 
         for boid, velocity in zip(self.boids, new_velocities):
             boid.set_velocity(velocity)

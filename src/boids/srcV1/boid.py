@@ -1,12 +1,11 @@
 import torch
 import numpy as np
+from ...common.animal import Animal
 from .const import SIZE, TURNING_SPEED, NOISE_ANGLE, MOVING_SPEED
 
-class Boid:
+class Boid(Animal):
     def __init__(self, position: torch.Tensor, velocity: torch.Tensor):
-        self.position = position.float()
-        self.velocity = velocity.float()
-        self.direction_angle = np.arctan2(self.velocity[1].item(), self.velocity[0].item())
+        super().__init__(position, velocity)
         
     def set_velocity(self, target_velocity: torch.Tensor):
         if torch.norm(target_velocity) < 1e-6:

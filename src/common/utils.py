@@ -2,6 +2,7 @@ import numpy as np
 from src.boids.srcV1.boid import Boid
 from src.boids.srcV1.const import *
 import torch
+from src.common.animal import Animal
 
 class Utils:
     @staticmethod
@@ -19,8 +20,8 @@ class Utils:
         return ((boid1.position[0] - boid2.position[0]) ** 2 + (boid1.position[1] - boid2.position[1]) ** 2) ** 0.5
 
     @staticmethod
-    def createRandomBoids(num) -> list[Boid]:
-        boids = []
+    def createRandomSpecies(num, species: Animal) -> list[Animal]:
+        species_list = []
         for _ in range(num):
             x = np.random.rand() * SIZE[0]
             y = np.random.rand() * SIZE[1]
@@ -29,7 +30,13 @@ class Utils:
             position = torch.tensor([x, y], dtype=torch.float32)
             velocity = torch.tensor([np.cos(angle), np.sin(angle)], dtype=torch.float32)
 
-            new_boid = Boid(position, velocity)
-            boids.append(new_boid)
-        return boids
+            new_animal = species(position, velocity)
+            species_list.append(new_animal)
+        return species_list
 
+    @staticmethod
+    def normalize(vector: torch.Tensor) -> torch.Tensor:
+        norm = torch.norm(vector)
+        if norm > 1e-8:
+            return vector / norm
+        return torch.zeros_like(vector)
