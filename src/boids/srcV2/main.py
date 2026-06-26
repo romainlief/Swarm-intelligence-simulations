@@ -1,7 +1,7 @@
 import pygame
 import numpy as np
-from simulation import Simulation
-from const import *
+from src.boids.srcV2.simulation import Simulation
+from src.boids.srcV2.const import *
 
 pygame.init()
 screen = pygame.display.set_mode((WIDTH, HEIGHT))

@@ -1,6 +1,6 @@
-from boid import Boid
-from const import *
-from utils import Utils
+from .boid import Boid
+from .const import *
+from src.common.utils import Utils
 import torch
 
 class Simulation:

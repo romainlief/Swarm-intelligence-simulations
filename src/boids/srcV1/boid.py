@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from const import SIZE, TURNING_SPEED, NOISE_ANGLE, MOVING_SPEED
+from .const import SIZE, TURNING_SPEED, NOISE_ANGLE, MOVING_SPEED
 
 class Boid:
     def __init__(self, position: torch.Tensor, velocity: torch.Tensor):

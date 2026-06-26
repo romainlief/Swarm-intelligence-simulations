@@ -1,5 +1,5 @@
 import numpy as np
-from const import *
+from src.boids.srcV2.const import *
 
 class Simulation:
     def __init__(self, num_boids: int):

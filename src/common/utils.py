@@ -1,6 +1,6 @@
 import numpy as np
-from boid import Boid
-from const import *
+from src.boids.srcV1.boid import Boid
+from src.boids.srcV1.const import *
 import torch
 
 class Utils:
