@@ -6,18 +6,18 @@ from src.common.animal import Animal
 
 class Utils:
     @staticmethod
-    def getBoidsWithin(boid, min_radius, max_radius, simulation):
-        boids_within = []
-        for other_boid in simulation.boids:
-            if other_boid != boid:
-                distance = Utils.distance(boid, other_boid)
+    def getAnimalsWithin(animal, animals_list, min_radius, max_radius):
+        animals_within = []
+        for other_animal in animals_list:
+            if other_animal != animal:
+                distance = Utils.distance(animal, other_animal)
                 if min_radius < distance <= max_radius:
-                    boids_within.append(other_boid)
-        return boids_within
-    
+                    animals_within.append(other_animal)
+        return animals_within
+
     @staticmethod
-    def distance(boid1, boid2):
-        return ((boid1.position[0] - boid2.position[0]) ** 2 + (boid1.position[1] - boid2.position[1]) ** 2) ** 0.5
+    def distance(animal1, animal2):
+        return ((animal1.position[0] - animal2.position[0]) ** 2 + (animal1.position[1] - animal2.position[1]) ** 2) ** 0.5
 
     @staticmethod
     def createRandomSpecies(num, species: Animal) -> list[Animal]:
