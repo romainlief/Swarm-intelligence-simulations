@@ -116,9 +116,12 @@ class Simulation:
                 W_ORIENTATION_RADIUS * W_CHARACTERISTIC_LENGTH,
                 W_ATTRACTION_RADIUS * W_CHARACTERISTIC_LENGTH,
             )
-            hunting_sheeps = Utils.getAnimalsWithin(
-                wolf, self.sheeps, 0, W_WOLF_HUNTING_RADIUS * W_CHARACTERISTIC_LENGTH
-            )
+            if wolf.alpha:
+                hunting_sheeps = Utils.getAnimalsWithin(
+                    wolf, self.sheeps, 0, W_WOLF_HUNTING_RADIUS * W_CHARACTERISTIC_LENGTH
+                )
+            else:
+                hunting_sheeps = []
 
             # FORCE DE RÉPULSION
             repulsion_force = torch.zeros(2)
