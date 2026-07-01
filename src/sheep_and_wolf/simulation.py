@@ -7,8 +7,10 @@ import torch
 
 class Simulation:
     def __init__(self, num_wolves: int = NUM_WOLVES, num_sheeps: int = NUM_SHEEPS):
-        self.wolves = Utils.createRandomSpecies(num_wolves, Wolf)
-        self.sheeps = Utils.createRandomSpecies(num_sheeps, Sheep)
+        self.wolves: list[Wolf] = Utils.createRandomSpecies(num_wolves, Wolf)
+        self.wolves[0].alpha = True
+        
+        self.sheeps: list[Sheep] = Utils.createRandomSpecies(num_sheeps, Sheep)
 
     def update(self):
         new_sheeps_velocities = []
@@ -110,7 +112,7 @@ class Simulation:
             )
             attracting_wolves = Utils.getAnimalsWithin(
                 wolf,
-                self.wolves,
+                [self.wolves[0]],
                 W_ORIENTATION_RADIUS * W_CHARACTERISTIC_LENGTH,
                 W_ATTRACTION_RADIUS * W_CHARACTERISTIC_LENGTH,
             )
@@ -162,7 +164,7 @@ class Simulation:
             elif len(hunting_sheeps) > 0:
                 # Si pas de collision imminente entre loups, on chasse!
                 # On garde un léger alignement (0.1) pour un effet de meute coordonnée pendant la chasse
-                steering = steering * 0.2 + hunting_force * 0.7 + alignment_force * 0.1
+                steering = steering * 0.4 + hunting_force * 0.4 + alignment_force * 0.2
             else:
                 # Comportement de patrouille classique (Flocking)
                 steering = steering * 0.5 + alignment_force * 0.3 + cohesion_force * 0.2

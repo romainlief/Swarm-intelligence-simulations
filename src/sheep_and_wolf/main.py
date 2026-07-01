@@ -58,7 +58,10 @@ def main():
         for points in all_sheep_points:
             pygame.draw.polygon(screen, (0, 255, 0), points)
         for points in all_wolf_points:
-            pygame.draw.polygon(screen, (255, 0, 0), points)
+            if sim.wolves[all_wolf_points.tolist().index(points.tolist())].alpha:
+                pygame.draw.polygon(screen, (255, 0, 0), points)  # Red for alpha wolf
+            else:
+                pygame.draw.polygon(screen, (255, 165, 0), points)  # Orange for other wolves
         
         pygame.display.set_caption(f"Sheep and Wolf - FPS: {int(clock.get_fps())}")
         pygame.display.flip()

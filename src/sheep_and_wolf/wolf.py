@@ -6,6 +6,7 @@ from ..common.animal import Animal
 class Wolf(Animal):
     def __init__(self, position: torch.Tensor, velocity: torch.Tensor):
         super().__init__(position, velocity)
+        self.alpha: bool = False
 
     def set_velocity(self, target_velocity: torch.Tensor):
         if torch.norm(target_velocity) < 1e-6:
