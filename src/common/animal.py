@@ -8,6 +8,7 @@ class Animal(ABC):
         self.position = position
         self.velocity = velocity
         self.direction_angle = np.arctan2(self.velocity[1].item(), self.velocity[0].item())
+        self.alive = True
 
     @abstractmethod
     def set_velocity(self, target_velocity: torch.Tensor):

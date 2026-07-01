@@ -13,24 +13,25 @@ class Simulation:
         self.sheeps: list[Sheep] = Utils.createRandomSpecies(num_sheeps, Sheep)
 
     def update(self):
+        sheeps_alive = [sheep for sheep in self.sheeps if sheep.alive]
         new_sheeps_velocities = []
 
         for sheep in self.sheeps:
             repelling_sheeps = Utils.getAnimalsWithin(
                 sheep,
-                self.sheeps,
+                sheeps_alive,
                 0,
                 S_REPULSION_RADIUS * S_CHARACTERISTIC_LENGTH,
             )
             orienting_sheeps = Utils.getAnimalsWithin(
                 sheep,
-                self.sheeps,
+                sheeps_alive,
                 S_REPULSION_RADIUS * S_CHARACTERISTIC_LENGTH,
                 S_ORIENTATION_RADIUS * S_CHARACTERISTIC_LENGTH,
             )
             attracting_sheeps = Utils.getAnimalsWithin(
                 sheep,
-                self.sheeps,
+                sheeps_alive,
                 S_ORIENTATION_RADIUS * S_CHARACTERISTIC_LENGTH,
                 S_ATTRACTION_RADIUS * S_CHARACTERISTIC_LENGTH,
             )
@@ -40,6 +41,10 @@ class Simulation:
                 0,
                 S_WOLF_REPULSION_RADIUS * W_CHARACTERISTIC_LENGTH,
             )
+            if len(repelling_wolves) > 0:
+                sheep.frightened = True
+            else:
+                sheep.frightened = False
 
             # FORCE DE RÉPULSION
             repulsion_force = torch.zeros(2)
@@ -81,9 +86,8 @@ class Simulation:
                 cohesion_force = Utils.normalize(cohesion_force)
 
             steering = sheep.velocity.clone()
-
             if len(repelling_wolves) > 0:
-                steering = steering * 0.1 + repulsion_force * 0.9
+                steering = steering * 0.1 + fear_force * 0.9
             elif len(repelling_sheeps) > 0:
                 steering = steering * 0.2 + repulsion_force * 0.8
             else:
@@ -94,7 +98,7 @@ class Simulation:
             sheep.set_velocity(velocity)
 
         for sheep in self.sheeps:
-            sheep.update()
+            sheep.update(sheep.frightened)
 
         new_wolves_velocities = []
         for wolf in self.wolves:
@@ -118,7 +122,7 @@ class Simulation:
             )
             if wolf.alpha:
                 hunting_sheeps = Utils.getAnimalsWithin(
-                    wolf, self.sheeps, 0, W_WOLF_HUNTING_RADIUS * W_CHARACTERISTIC_LENGTH
+                    wolf, sheeps_alive, 0, W_WOLF_HUNTING_RADIUS * W_CHARACTERISTIC_LENGTH
                 )
             else:
                 hunting_sheeps = []
@@ -178,3 +182,10 @@ class Simulation:
 
         for wolf in self.wolves:
             wolf.update()
+        
+        for sheep in self.sheeps:
+            if sheep.alive:  # On ne tue pas un mouton déjà mort
+                # Calcul de la distance euclidienne
+                distance = np.linalg.norm(self.wolves[0].position - sheep.position)
+                if distance < SEUIL_COLLISION:
+                    sheep.alive = False
