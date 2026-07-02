@@ -6,7 +6,7 @@ from src.common.animal import Animal
 
 class Utils:
     @staticmethod
-    def getAnimalsWithin(animal, animals_list, min_radius, max_radius):
+    def getAnimalsWithin(animal, animals_list, min_radius, max_radius) -> list[Animal]:
         animals_within = []
         for other_animal in animals_list:
             if other_animal != animal:
@@ -40,3 +40,16 @@ class Utils:
         if norm > 1e-8:
             return vector / norm
         return torch.zeros_like(vector)
+
+    @staticmethod
+    def filter_by_view_angle(neighbors, animal, animal_angle):
+        visible_neighbors = []
+        for other in neighbors:
+            diff = other.position - animal.position
+            angle_to_neighbor = torch.atan2(diff[1], diff[0])                    
+            angle_diff = angle_to_neighbor - animal_angle
+            # Normalisation de l'angle entre -PI et PI (évite les bugs de saut de 0 à 2PI)
+            angle_diff = torch.atan2(torch.sin(angle_diff), torch.cos(angle_diff))
+            if torch.abs(angle_diff) <= (VIEW_ANGLE / 2):
+                visible_neighbors.append(other)
+        return visible_neighbors

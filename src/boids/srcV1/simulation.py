@@ -10,23 +10,28 @@ class Simulation:
 
     def update(self):
         new_velocities = []
-
         for boid in self.boids:
-            repelling_boids = Utils.getAnimalsWithin(
+            raw_repelling = Utils.getAnimalsWithin(
                 boid, self.boids, 0, REPULSION_RADIUS * CHARACTERISTIC_LENGTH
             )
-            orienting_boids = Utils.getAnimalsWithin(
+            raw_orienting = Utils.getAnimalsWithin(
                 boid,
                 self.boids,
                 REPULSION_RADIUS * CHARACTERISTIC_LENGTH,
                 ORIENTATION_RADIUS * CHARACTERISTIC_LENGTH,
             )
-            attracting_boids = Utils.getAnimalsWithin(
+            raw_attracting = Utils.getAnimalsWithin(
                 boid,
                 self.boids,
                 ORIENTATION_RADIUS * CHARACTERISTIC_LENGTH,
                 ATTRACTION_RADIUS * CHARACTERISTIC_LENGTH,
             )
+
+            boid_angle = torch.atan2(boid.velocity[1], boid.velocity[0])
+            
+            repelling_boids = Utils.filter_by_view_angle(raw_repelling, boid, boid_angle)
+            orienting_boids = Utils.filter_by_view_angle(raw_orienting, boid, boid_angle)
+            attracting_boids = Utils.filter_by_view_angle(raw_attracting, boid, boid_angle)
 
             # FORCE DE RÉPULSION
             repulsion_force = torch.zeros(2)
@@ -35,7 +40,6 @@ class Simulation:
                     diff = boid.position - other.position
                     dist = torch.norm(diff)
                     if dist > 1e-8:
-                        # Plus ils sont proches, plus la force de répulsion est forte (1/dist)
                         repulsion_force += (diff / dist) / dist
                 repulsion_force = Utils.normalize(repulsion_force)
 

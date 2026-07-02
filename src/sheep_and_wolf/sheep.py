@@ -35,20 +35,20 @@ class Sheep(Animal):
         self.position[0] += self.velocity[0]
         self.position[1] += self.velocity[1]
 
-        if self.position[0] < 0:
-            self.position[0] = 0
+        if self.position[0] < BOARD_X:
+            self.position[0] = BOARD_X
             self.velocity[0] *= -1
             self.direction_angle = np.arctan2(self.velocity[1].item(), self.velocity[0].item())
-        elif self.position[0] > SIZE[0]:
-            self.position[0] = SIZE[0]
+        elif self.position[0] > BOARD_X + BOARD_WIDTH:
+            self.position[0] = BOARD_X + BOARD_WIDTH
             self.velocity[0] *= -1
             self.direction_angle = np.arctan2(self.velocity[1].item(), self.velocity[0].item())
             
-        if self.position[1] < 0:
-            self.position[1] = 0
+        if self.position[1] < BOARD_Y:
+            self.position[1] = BOARD_Y
             self.velocity[1] *= -1
             self.direction_angle = np.arctan2(self.velocity[1].item(), self.velocity[0].item())
-        elif self.position[1] > SIZE[1]:
-            self.position[1] = SIZE[1]
+        elif self.position[1] > BOARD_Y + BOARD_HEIGHT:
+            self.position[1] = BOARD_Y + BOARD_HEIGHT
             self.velocity[1] *= -1
             self.direction_angle = np.arctan2(self.velocity[1].item(), self.velocity[0].item())

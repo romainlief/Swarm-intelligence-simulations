@@ -10,11 +10,13 @@ clock = pygame.time.Clock()
 
 def main():
     sim = Simulation(num_wolves=NUM_WOLVES, num_sheeps=NUM_SHEEPS)
+    
     running = True
     size = 6
     base_shape = np.array(
         [[size, 0], [-size * 0.6, size * 0.5], [-size * 0.6, -size * 0.5]]
     ) # shape of the triangle representing the animals
+    
     while running:
         dt = clock.tick(FPS)
         for event in pygame.event.get():
@@ -22,7 +24,8 @@ def main():
                 running = False
         sim.update()
         screen.fill((0, 0, 0))
-        
+        board = pygame.draw.rect(screen, (255, 255, 255), [BOARD_X, BOARD_Y, BOARD_WIDTH, BOARD_HEIGHT], 1) 
+               
         sheeps_positions = np.array([sheep.position for sheep in sim.sheeps])
         sheeps_velocities = np.array([sheep.velocity for sheep in sim.sheeps])
         
@@ -55,17 +58,21 @@ def main():
         rotated_shapes_wolf = np.matmul(base_shape, rot_matrices_wolf.transpose(0, 2, 1))
         all_wolf_points = rotated_shapes_wolf + wolfs_positions[:, np.newaxis, :]
         
-        for points in all_sheep_points:
-            if sim.sheeps[all_sheep_points.tolist().index(points.tolist())].alive:
+        # Remplacer la boucle des moutons par :
+        for i, points in enumerate(all_sheep_points):
+            sheep = sim.sheeps[i]
+            if sheep.alive:
                 pygame.draw.polygon(screen, (0, 255, 0), points)
             else:
-                pygame.draw.polygon(screen, (128, 128, 128), points)  # Gray for dead sheep
-            
-        for points in all_wolf_points:
-            if sim.wolves[all_wolf_points.tolist().index(points.tolist())].alpha:
-                pygame.draw.polygon(screen, (255, 0, 0), points)  # Red for alpha wolf
+                pygame.draw.polygon(screen, (128, 128, 128), points)
+        
+        # Remplacer la boucle des loups par :
+        for i, points in enumerate(all_wolf_points):
+            wolf = sim.wolves[i]
+            if wolf.alpha:
+                pygame.draw.polygon(screen, (255, 0, 0), points)
             else:
-                pygame.draw.polygon(screen, (255, 165, 0), points)  # Orange for other wolves
+                pygame.draw.polygon(screen, (255, 165, 0), points)
         
         pygame.display.set_caption(f"Sheep and Wolf - FPS: {int(clock.get_fps())}")
         pygame.display.flip()

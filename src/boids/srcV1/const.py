@@ -5,7 +5,7 @@ WIDTH, HEIGHT = SIZE
 FPS = 60
 TITLE = "Boids - Pygame Simulation"
 
-NUM_BOIDS = 100
+NUM_BOIDS = 20
 
 TURNING_SPEED = np.radians(8)
 NOISE_ANGLE = np.radians(10)

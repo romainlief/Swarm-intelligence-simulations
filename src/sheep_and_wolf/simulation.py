@@ -7,10 +7,10 @@ import torch
 
 class Simulation:
     def __init__(self, num_wolves: int = NUM_WOLVES, num_sheeps: int = NUM_SHEEPS):
-        self.wolves: list[Wolf] = Utils.createRandomSpecies(num_wolves, Wolf)
+        self.wolves: list[Wolf] = Utils.createRandomSpecies(num_wolves, Wolf) # type: ignore
         self.wolves[0].alpha = True
         
-        self.sheeps: list[Sheep] = Utils.createRandomSpecies(num_sheeps, Sheep)
+        self.sheeps: list[Sheep] = Utils.createRandomSpecies(num_sheeps, Sheep) # type: ignore
 
     def update(self):
         sheeps_alive = [sheep for sheep in self.sheeps if sheep.alive]
