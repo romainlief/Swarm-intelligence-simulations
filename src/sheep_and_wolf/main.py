@@ -58,7 +58,6 @@ def main():
         rotated_shapes_wolf = np.matmul(base_shape, rot_matrices_wolf.transpose(0, 2, 1))
         all_wolf_points = rotated_shapes_wolf + wolfs_positions[:, np.newaxis, :]
         
-        # Remplacer la boucle des moutons par :
         for i, points in enumerate(all_sheep_points):
             sheep = sim.sheeps[i]
             if sheep.alive:
@@ -66,7 +65,6 @@ def main():
             else:
                 pygame.draw.polygon(screen, (128, 128, 128), points)
         
-        # Remplacer la boucle des loups par :
         for i, points in enumerate(all_wolf_points):
             wolf = sim.wolves[i]
             if wolf.alpha:
