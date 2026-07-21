@@ -1,5 +1,3 @@
 FEATURE:
 - loup non alpha avec meilleur comportement: encerclement de la cible avec espacement de l'alpha ainsi que meme distance sheep alpha. 
 
-BUG:
-certain wolfs ont l'air d'oublier la cible a certains moments.
