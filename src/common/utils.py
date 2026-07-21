@@ -11,13 +11,16 @@ class Utils:
         for other_animal in animals_list:
             if other_animal != animal:
                 distance = Utils.distance(animal, other_animal)
-                if min_radius < distance <= max_radius:
-                    animals_within.append(other_animal)
+                if distance is not None:
+                    if min_radius < distance <= max_radius:
+                        animals_within.append(other_animal)
         return animals_within
 
     @staticmethod
     def distance(animal1, animal2):
-        return ((animal1.position[0] - animal2.position[0]) ** 2 + (animal1.position[1] - animal2.position[1]) ** 2) ** 0.5
+        if animal1 is not None and animal2 is not None:
+            return ((animal1.position[0] - animal2.position[0]) ** 2 + (animal1.position[1] - animal2.position[1]) ** 2) ** 0.5
+        return None
 
     @staticmethod
     def createRandomSpecies(num, species: Animal) -> list[Animal]:
