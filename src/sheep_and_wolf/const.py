@@ -10,7 +10,7 @@ BOARD_HEIGHT = HEIGHT - (2 * PADDING)
 FPS = 60
 TITLE = "Sheep and Wolf - Pygame Simulation"
 
-SEUIL_COLLISION = 2.5
+SEUIL_COLLISION = 3
 
 # Sheep parameters 
 NUM_SHEEPS = 15

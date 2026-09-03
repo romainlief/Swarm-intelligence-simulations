@@ -34,9 +34,9 @@ class Simulation:
         self.attracting_wolves = None
         self.hunting_sheeps = []
         self.new_wolves_velocities = []
+        self.hunting_force = None
 
     def update(self):
-        # 1. MISE À JOUR DES MOUTONS
         self.sheeps_alive = [sheep for sheep in self.sheeps if sheep.alive]
         self.new_sheeps_velocities = []
 
@@ -46,21 +46,14 @@ class Simulation:
             self.compute_repulsion_force(self.repelling_sheeps, sheep)
             self.compute_fear_force_for(self.repelling_wolves_for_sheep, sheep)
             self.compute_alignement_force(self.orienting_sheeps, sheep)
-
-            # Cohesion moutons
-            self.cohesion_force = torch.zeros(2)
-            if self.attracting_sheeps:
-                center_of_mass = sum(s.position for s in self.attracting_sheeps) / len(
-                    self.attracting_sheeps
-                )
-                self.cohesion_force = Utils.normalize(center_of_mass - sheep.position)
-
+            self.compute_cohesion_force(self.attracting_sheeps, sheep)
+            
             self.steering = sheep.velocity.clone()
             if self.repelling_wolves_for_sheep and self.fear_force is not None:
                 self.steering = self.steering * 0.1 + self.fear_force * 0.9
             elif self.repelling_sheeps and self.repulsion_force is not None:
                 self.steering = self.steering * 0.2 + self.repulsion_force * 0.8
-            elif self.alignment_force is not None:
+            elif self.alignment_force is not None and self.cohesion_force is not None:
                 self.steering = (
                     self.steering * 0.5
                     + self.alignment_force * 0.3
@@ -70,11 +63,8 @@ class Simulation:
 
         self.update_animal(self.sheeps, self.new_sheeps_velocities)
 
-        # 2. SELECTION DE LA PROIE PAR L'ALPHA
-        # On trouve le loup Alpha
         alpha_wolf = next((w for w in self.wolves if w.alpha), self.wolves[0])
 
-        # L'Alpha regarde autour de lui s'il y a des moutons
         sheeps_near_alpha = Utils.getAnimalsWithin(
             alpha_wolf,
             self.sheeps_alive,
@@ -89,47 +79,30 @@ class Simulation:
                 sheeps_near_alpha, key=lambda s: Utils.distance(alpha_wolf, s)  # type: ignore
             )  # type: ignore
 
-        # MISE À JOUR DES LOUPS (CHASSE EN MEUTE)
+        # maj loup chasse en meute
         self.new_wolves_velocities = []
         for wolf in self.wolves:
             self.compute_wolf_env(wolf)
             self.compute_repulsion_force(self.repelling_wolves_for_wolf, wolf)
             self.compute_alignement_force(self.orienting_wolves, wolf)
-
-            # Cohésion entre loups (rester groupés)
-            self.cohesion_force = torch.zeros(2)
-            if self.attracting_wolves:
-                center_of_mass = sum(w.position for w in self.attracting_wolves) / len(
-                    self.attracting_wolves
-                )
-                self.cohesion_force = Utils.normalize(center_of_mass - wolf.position)
-
-            # Force de chasse vers la cible désignée par l'Alpha
-            hunting_force = torch.zeros(2)
-            if pack_target_sheep is not None:
-                # Tous les loups convergent vers le mouton de l'Alpha
-                hunting_force = Utils.normalize(
-                    pack_target_sheep.position - wolf.position
-                )
-
+            self.compute_cohesion_force(self.attracting_wolves, wolf)
+            self.compute_hunting_force(pack_target_sheep, wolf)
             self.steering = wolf.velocity.clone()
 
             # Prise de décision du loup
             if self.repelling_wolves_for_wolf and self.repulsion_force is not None:
                 # Éviter de se rentrer dedans entre loups
                 self.steering = self.steering * 0.3 + self.repulsion_force * 0.7
-
-            elif pack_target_sheep is not None:
+            elif pack_target_sheep is not None and self.cohesion_force is not None and self.hunting_force is not None:
                 # Si l'Alpha a donné une cible -> Tout le monde chasse
                 self.steering = (
                     self.steering * 0.3
-                    + hunting_force * 0.5
+                    + self.hunting_force * 0.5
                     + self.cohesion_force * 0.2
                 )
-
             else:
                 # Pas de cible -> Patrouille/Flocking classique
-                if self.alignment_force is not None:
+                if self.alignment_force is not None and self.cohesion_force is not None:
                     self.steering = (
                         self.steering * 0.5
                         + self.alignment_force * 0.3
@@ -232,3 +205,16 @@ class Simulation:
             for animal in orienting_animals:
                 self.alignment_force += animal.velocity
             self.alignment_force = Utils.normalize(self.alignment_force)
+
+    def compute_cohesion_force(self, attracting_animals, animal):
+        self.cohesion_force = torch.zeros(2)
+        if attracting_animals:
+            center_of_mass = sum(s.position for s in attracting_animals) / len(
+                attracting_animals
+            )
+            self.cohesion_force = Utils.normalize(center_of_mass - animal.position)
+
+    def compute_hunting_force(self, target_sheep, wolf):
+        self.hunting_force = torch.zeros(2)
+        if target_sheep is not None:
+            self.hunting_force = Utils.normalize(target_sheep.position - wolf.position)
